@@ -1,8 +1,7 @@
 module Main where
 
-import qualified Input (getInput)
+import qualified Util (run)
 
 main :: IO ()
 main = do
-  input <- Input.getInput 2025 1
-  putStrLn (show input)
+  return ()
