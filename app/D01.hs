@@ -4,7 +4,6 @@ import Control.Applicative ((<|>))
 import Data.Attoparsec.ByteString (
     Parser,
     endOfInput,
-    parseOnly,
     sepBy,
  )
 import Data.Attoparsec.ByteString.Char8 (
@@ -13,7 +12,7 @@ import Data.Attoparsec.ByteString.Char8 (
     skipSpace,
     space,
  )
-import System.Exit (die)
+
 import Util (run)
 import Prelude hiding (takeWhile)
 
@@ -37,7 +36,7 @@ part1 = part1' 0 50
     part1' zeroes dial (turn : turns) = part1' zeroes' dial' turns
       where
         dial' = (dial + turn) `mod` 100
-        zeroes' = zeroes + if dial' == 0 then 1 else dial
+        zeroes' = zeroes + if dial' == 0 then 1 else 0
 
 part2 :: [Int] -> Int
 part2 = const 0
