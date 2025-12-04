@@ -1,8 +1,8 @@
 module Main where
 
-import qualified Util (someFunc)
+import qualified Input (getInput)
 
 main :: IO ()
 main = do
-  putStrLn "AOC 2025 Day 02!"
-  Util.someFunc
+  input <- Input.getInput 2025 1
+  putStrLn (show input)
