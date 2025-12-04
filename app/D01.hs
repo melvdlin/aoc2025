@@ -12,7 +12,6 @@ import Data.Attoparsec.ByteString.Char8 (
     skipSpace,
     space,
  )
-
 import Util (run)
 import Prelude hiding (takeWhile)
 
@@ -30,13 +29,21 @@ parser = (line `sepBy` space) <* skipSpace <* endOfInput
     right = char8 'R' *> return 1
 
 part1 :: [Int] -> Int
-part1 = part1' 0 50
+part1 = fst . foldl part1' (0, 50)
   where
-    part1' zeroes _ [] = zeroes
-    part1' zeroes dial (turn : turns) = part1' zeroes' dial' turns
+    part1' (zeroes, dial) turn = (zeroes', dial')
       where
-        dial' = (dial + turn) `mod` 100
         zeroes' = zeroes + if dial' == 0 then 1 else 0
+        dial' = (dial + turn) `mod` 100
 
 part2 :: [Int] -> Int
-part2 = const 0
+part2 = fst . foldl part2' (0, 50)
+  where
+    part2' (zeroes, dial) turn =
+        (zeroes', dial')
+      where
+        zeroes'
+            | turn > 0 = zeroes + (dial + turn) `div` 100
+            | dial > 0 = zeroes + (dial + turn) `div` (-100) + 1
+            | otherwise = zeroes + (dial + turn) `div` (-100)
+        dial' = (dial + turn) `mod` 100
