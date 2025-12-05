@@ -9,7 +9,8 @@ import qualified Input (getInput)
 import System.Exit (die)
 import Prelude hiding (takeWhile)
 
-run :: Natural -> Natural -> Parser a -> (a -> Int) -> (a -> Int) -> IO ()
+run ::
+    (Show b, Show c) => Natural -> Natural -> Parser a -> (a -> b) -> (a -> c) -> IO ()
 run year day parser part1 part2 = do
     raw <- Input.getInput year day
     input <- case (parseOnly parser raw) of
