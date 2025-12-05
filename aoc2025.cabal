@@ -97,6 +97,7 @@ executable d02
     aoc2025,
     attoparsec ^>=0.14.4,
     base ^>=4.18.3.0,
+    containers ^>=0.7,
 
   hs-source-dirs: app
   default-language: Haskell2010

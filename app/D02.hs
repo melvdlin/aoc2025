@@ -1,10 +1,13 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Main where
+module Main (main) where
 
 import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
 import Data.Attoparsec.ByteString.Char8 (char8, decimal, skipSpace)
 import Data.Int (Int64)
+import Data.Set (Set)
+import qualified Data.Set as Set
+
 import Util (run)
 
 main :: IO ()
@@ -17,39 +20,36 @@ parser = range `sepBy` char8 ',' <* skipSpace <* endOfInput
     range = (,) <$> decimal <* (char8 '-') <*> decimal
 
 part1 :: (Integral a) => [(a, a)] -> a
-part1 = sum . concatMap part1'
+part1 = sum . (=<<) part1'
   where
     part1' :: (Integral a) => (a, a) -> [a]
-    part1' (lo, hi)
-        | nextID lo <= hi = (nextID lo) : part1' (nextID lo + 1, hi)
-        | otherwise = []
+    part1' (lo, hi) = repetitions lo hi 2
 
-part2 :: (Integral a) => [(a, a)] -> a
-part2 = const 0
+part2 :: (Integral a, Show a) => [(a, a)] -> a
+part2 = sum . fmap (sum . part2')
+  where
+    part2' :: (Integral a) => (a, a) -> Set a
+    part2' (lo, hi) = (Set.fromList . concatMap (repetitions lo hi)) [2 .. digits hi]
+
+repetitions :: (Integral a) => a -> a -> a -> [a]
+repetitions lo hi n = (takeWhile (<= hi) . map (decimalRepeat n)) [next ..]
+  where
+    first = upperNth n lo
+    next
+        | lo <= decimalRepeat n first = first
+        | otherwise = first + 1
+
+decimalRepeat :: (Integral a) => a -> a -> a
+decimalRepeat n d = decimalRepeat' n 0
+  where
+    decimalRepeat' n' acc
+        | n' > 0 = decimalRepeat' (n' - 1) (acc + d * 10 ^ ((n' - 1) * digits d))
+        | otherwise = acc
+
+upperNth :: (Integral a) => a -> a -> a
+upperNth n d
+    | digits d `mod` n == 0 = d `div` (10 ^ ((digits d) - (`div` n) (digits d)))
+    | otherwise = 10 ^ (digits d `div` n)
 
 digits :: (Integral a) => a -> a
 digits = succ . floor . logBase (10.0 :: Float) . fromIntegral
-
-nextID :: (Integral a) => a -> a
-nextID n
-    | (odd . digits) n = 10 ^ (digits n) + 10 ^ (`div` 2) (digits n)
-    | n <= (decimalConcat . upperHalf) n = (decimalConcat . upperHalf) n
-    | otherwise = (decimalConcat . (+ 1) . upperHalf) n
-
-decimalConcat :: (Integral a) => a -> a
-decimalConcat n = (decimalShiftLeft . digits) n n + n
-
-lowerHalf :: (Integral a) => a -> a
-lowerHalf n = n `mod` (10 ^ (`divCeil` 2) (digits n))
-
-upperHalf :: (Integral a) => a -> a
-upperHalf n = n `div` (10 ^ (`divCeil` 2) (digits n))
-
-decimalShiftLeft :: (Integral a) => a -> a -> a
-decimalShiftLeft = (*) . (10 ^)
-
-decimalShiftRight :: (Integral a) => a -> a -> a
-decimalShiftRight = (flip div) . (10 ^)
-
-divCeil :: (Integral a) => a -> a -> a
-divCeil = div . succ
