@@ -13,8 +13,6 @@ import Args (
 import Control.Exception (catch, throwIO)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
-import Data.Functor ((<&>))
-import Data.Maybe (fromMaybe)
 import GHC.Natural (Natural)
 import Network.HTTP.Simple (
     addRequestHeader,
@@ -44,18 +42,16 @@ getInput' year day (Options _ (Just tokenArg) Nothing) = do
     return input
 getInput' year day (Options _ tokenArg (Just cacheDir)) = do
     cached <- loadCachedInput (inputFilePath day cacheDir)
-    let fetched =
-            apply (cacheInput day cacheDir)
-                <$> (fetchInput year day =<<)
-                <$> getArg
-                <$> tokenArg
-    input <-
-        fromMaybe (die "input not found in cache") (return <$> cached <|> fetched)
-    return input
+    case cached of
+        Just input -> return input
+        Nothing -> case tokenArg of
+            Nothing -> die "input not found in cache and no token was provided"
+            Just tokenArg' -> do
+                token <- getArg tokenArg'
+                input <- fetchInput year day token
+                cacheInput day cacheDir input
+                return input
 getInput' _ _ _ = die "no input was provided"
-
-apply :: (Monad m) => (a -> m b) -> m a -> m a
-apply f x = x >>= f >> x
 
 getArg :: ArgInput -> IO ByteString
 getArg (ImmediateInput immediate) = return immediate
@@ -64,10 +60,8 @@ getArg (FileInput path) = BS.readFile path
 fetchInput :: Natural -> Natural -> ByteString -> IO ByteString
 fetchInput year day token = do
     let route = inputRoute year day
-    request <-
-        parseRequest route
-            <&> setRequestSecure True
-            <&> addRequestHeader "Cookie" token
+    baseRequest <- parseRequest route
+    let request = (setRequestSecure True . addRequestHeader "Cookie" token) baseRequest
     getResponseBody <$> httpBS request
 
 inputRoute :: Natural -> Natural -> String
