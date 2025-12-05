@@ -36,11 +36,10 @@ concatCells = foldl concatTwo 0
     concatTwo cells cell = cells * 10 + cell
 
 largest :: (Integral a) => [a] -> [a] -> [a]
-largest l [] = l
-largest [] _ = []
 largest (l : ls) (x : xs)
     | (length ls) > (length xs) = l : largest ls (x : xs)
     | otherwise = largest (replace (l : ls) x) xs
+largest ls _ = ls
 
 replace :: (Integral a) => [a] -> a -> [a]
 replace [] _ = []
