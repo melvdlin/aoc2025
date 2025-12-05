@@ -13,19 +13,21 @@ import Util (run)
 main :: IO ()
 main = run 2025 2 (parser @Int64) part1 part2
 
-parser :: (Integral a) => Parser [(a, a)]
+type Input a = [(a, a)]
+
+parser :: (Integral a) => Parser (Input a)
 parser = range `sepBy` char8 ',' <* skipSpace <* endOfInput
   where
     range :: (Integral a) => Parser (a, a)
     range = (,) <$> decimal <* (char8 '-') <*> decimal
 
-part1 :: (Integral a) => [(a, a)] -> a
+part1 :: (Integral a) => Input a -> a
 part1 = sum . concatMap part1'
   where
     part1' :: (Integral a) => (a, a) -> [a]
     part1' (lo, hi) = repetitions lo hi 2
 
-part2 :: (Integral a, Show a) => [(a, a)] -> a
+part2 :: (Integral a, Show a) => Input a -> a
 part2 = sum . fmap (sum . part2')
   where
     part2' :: (Integral a) => (a, a) -> Set a

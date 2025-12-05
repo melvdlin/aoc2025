@@ -18,7 +18,9 @@ import Prelude hiding (takeWhile)
 main :: IO ()
 main = run 2025 1 parser part1 part2
 
-parser :: Parser [Int]
+type Input = [Int]
+
+parser :: Parser Input
 parser = (line `sepBy` space) <* skipSpace <* endOfInput
   where
     line :: Parser Int
@@ -28,7 +30,7 @@ parser = (line `sepBy` space) <* skipSpace <* endOfInput
     right :: Parser Int
     right = char8 'R' *> return 1
 
-part1 :: [Int] -> Int
+part1 :: Input -> Int
 part1 = fst . foldl part1' (0, 50)
   where
     part1' (zeroes, dial) turn = (zeroes', dial')
@@ -36,7 +38,7 @@ part1 = fst . foldl part1' (0, 50)
         zeroes' = zeroes + if dial' == 0 then 1 else 0
         dial' = (dial + turn) `mod` 100
 
-part2 :: [Int] -> Int
+part2 :: Input -> Int
 part2 = fst . foldl part2' (0, 50)
   where
     part2' (zeroes, dial) turn =

@@ -12,19 +12,21 @@ import Util (run)
 main :: IO ()
 main = run 2025 3 (parser @Int) part1 part2
 
-parser :: (Integral a) => Parser [[a]]
+type Input a = [[a]]
+
+parser :: (Integral a) => Parser (Input a)
 parser = (many decimalDigit) `sepBy` space <* skipSpace <* endOfInput
 
 decimalDigit :: (Integral a) => Parser a
 decimalDigit = fromIntegral . digitToInt <$> digit
 
-part1 :: (Integral a, Show a) => [[a]] -> a
+part1 :: (Integral a, Show a) => Input a -> a
 part1 = sum . fmap part1'
   where
     part1' :: (Integral a, Show a) => [a] -> a
     part1' cells = concatCells (largest [0, 0] cells)
 
-part2 :: (Integral a) => [[a]] -> a
+part2 :: (Integral a) => Input a -> a
 part2 = sum . fmap part2'
   where
     part2' :: (Integral a) => [a] -> a
