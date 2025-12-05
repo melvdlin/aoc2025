@@ -20,7 +20,7 @@ parser = range `sepBy` char8 ',' <* skipSpace <* endOfInput
     range = (,) <$> decimal <* (char8 '-') <*> decimal
 
 part1 :: (Integral a) => [(a, a)] -> a
-part1 = sum . (=<<) part1'
+part1 = sum . concatMap part1'
   where
     part1' :: (Integral a) => (a, a) -> [a]
     part1' (lo, hi) = repetitions lo hi 2
