@@ -36,13 +36,6 @@ parser = toSet <$> parseRow `sepBy` space <* skipSpace <* endOfInput
     gridWithCoords l = rowWithCoords `map` (l `zip` [0 ..])
     rowWithCoords (l, i) = l `zip` (repeat i `zip` [0 ..])
 
-adjacent :: (Integral a) => (a, a) -> [(a, a)]
-adjacent (row, col) =
-    [ (row', col')
-    | row' <- [row - 1 .. row + 1]
-    , col' <- [col - 1 .. col + 1]
-    ]
-
 part1 :: (Integral a, Show a) => Input a -> a
 part1 = fromIntegral . length . reachableCells
 
@@ -60,6 +53,13 @@ reachableCells grid = Set.filter (reachableCell grid) grid
 
 reachableCell :: (Integral a) => Input a -> (a, a) -> Bool
 reachableCell grid cell = length (filter (`Set.member` grid) (adjacent cell)) < 5
+
+adjacent :: (Integral a) => (a, a) -> [(a, a)]
+adjacent (row, col) =
+    [ (row', col')
+    | row' <- [row - 1 .. row + 1]
+    , col' <- [col - 1 .. col + 1]
+    ]
 
 fixpoint :: (Eq b) => (b -> b) -> b -> b
 fixpoint f x
