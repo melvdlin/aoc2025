@@ -20,10 +20,10 @@ parser = (many decimalDigit) `sepBy` space <* skipSpace <* endOfInput
 decimalDigit :: (Integral a) => Parser a
 decimalDigit = fromIntegral . digitToInt <$> digit
 
-part1 :: (Integral a, Show a) => Input a -> a
+part1 :: (Integral a) => Input a -> a
 part1 = sum . fmap part1'
   where
-    part1' :: (Integral a, Show a) => [a] -> a
+    part1' :: (Integral a) => [a] -> a
     part1' cells = concatCells (largest [0, 0] cells)
 
 part2 :: (Integral a) => Input a -> a

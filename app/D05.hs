@@ -25,14 +25,14 @@ parser =
     fresh = (,) <$> decimal <* char8 '-' <*> decimal
     available = decimal
 
-part1 :: (Integral a, Show a) => Input a -> a
+part1 :: (Integral a) => Input a -> a
 part1 (Input fresh available) =
     (fromIntegral . length . filter ((`any` fresh) . inRange)) available
 
 inRange :: (Ord a) => a -> (a, a) -> Bool
 inRange e (lo, hi) = lo <= e && e <= hi
 
-part2 :: (Integral a, Show a) => Input a -> a
+part2 :: (Integral a) => Input a -> a
 part2 (Input fresh _) = (sum . (map rangeLen) . (foldr insert [])) fresh
 
 rangeLen :: (Integral a) => (a, a) -> a

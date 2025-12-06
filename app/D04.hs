@@ -36,7 +36,7 @@ parser = toSet <$> parseRow `sepBy` space <* skipSpace <* endOfInput
     gridWithCoords l = rowWithCoords `map` (l `zip` [0 ..])
     rowWithCoords (l, i) = l `zip` (repeat i `zip` [0 ..])
 
-part1 :: (Integral a, Show a) => Input a -> a
+part1 :: (Integral a) => Input a -> a
 part1 = fromIntegral . length . reachableCells
 
 part2 :: (Integral a) => Input a -> a

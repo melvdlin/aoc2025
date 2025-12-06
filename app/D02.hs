@@ -27,7 +27,7 @@ part1 = sum . concatMap part1'
     part1' :: (Integral a) => (a, a) -> [a]
     part1' (lo, hi) = repetitions lo hi 2
 
-part2 :: (Integral a, Show a) => Input a -> a
+part2 :: (Integral a) => Input a -> a
 part2 = sum . fmap (sum . part2')
   where
     part2' :: (Integral a) => (a, a) -> Set a
