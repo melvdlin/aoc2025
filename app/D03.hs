@@ -2,8 +2,8 @@
 
 module Main (main) where
 
-import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
-import Data.Attoparsec.ByteString.Char8 (digit, skipSpace, space)
+import Data.Attoparsec.ByteString (Parser, sepBy)
+import Data.Attoparsec.ByteString.Char8 (digit, space)
 
 import Control.Applicative (many)
 import Data.Char (digitToInt)
@@ -15,7 +15,7 @@ main = run 2025 3 (parser @Int) (parser @Int) part1 part2
 type Input a = [[a]]
 
 parser :: (Integral a) => Parser (Input a)
-parser = (many decimalDigit) `sepBy` space <* skipSpace <* endOfInput
+parser = (many decimalDigit) `sepBy` space
 
 decimalDigit :: (Integral a) => Parser a
 decimalDigit = fromIntegral . digitToInt <$> digit

@@ -2,8 +2,8 @@
 
 module Main (main) where
 
-import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
-import Data.Attoparsec.ByteString.Char8 (char8, skipSpace, space)
+import Data.Attoparsec.ByteString (Parser, sepBy)
+import Data.Attoparsec.ByteString.Char8 (char8, space)
 
 import Control.Applicative (many, (<|>))
 import Data.Functor (($>))
@@ -17,7 +17,7 @@ main = run 2025 4 (parser @Int) (parser @Int) part1 part2
 type Input a = Set (a, a)
 
 parser :: (Integral a) => Parser (Input a)
-parser = toSet <$> parseRow `sepBy` space <* skipSpace <* endOfInput
+parser = toSet <$> parseRow `sepBy` space
   where
     parseRow :: Parser [Bool]
     parseRow = many (empty <|> occupied)

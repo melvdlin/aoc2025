@@ -2,8 +2,8 @@
 
 module Main (main) where
 
-import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
-import Data.Attoparsec.ByteString.Char8 (char8, decimal, skipSpace)
+import Data.Attoparsec.ByteString (Parser, sepBy)
+import Data.Attoparsec.ByteString.Char8 (char8, decimal)
 import Data.Int (Int64)
 import Data.Set (Set)
 import qualified Data.Set as Set
@@ -16,7 +16,7 @@ main = run 2025 2 (parser @Int64) (parser @Int64) part1 part2
 type Input a = [(a, a)]
 
 parser :: (Integral a) => Parser (Input a)
-parser = range `sepBy` char8 ',' <* skipSpace <* endOfInput
+parser = range `sepBy` char8 ','
   where
     range :: (Integral a) => Parser (a, a)
     range = (,) <$> decimal <* (char8 '-') <*> decimal

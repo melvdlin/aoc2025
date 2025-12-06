@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
+import Data.Attoparsec.ByteString (Parser, sepBy)
 import Data.Attoparsec.ByteString.Char8 (char8, decimal, skipSpace, space)
 
 import Util (run)
@@ -18,8 +18,6 @@ parser =
         <$> fresh `sepBy` space
         <* skipSpace
         <*> available `sepBy` space
-        <* skipSpace
-        <* endOfInput
   where
     fresh :: (Integral a) => Parser (a, a)
     fresh = (,) <$> decimal <* char8 '-' <*> decimal

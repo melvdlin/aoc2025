@@ -3,13 +3,11 @@ module Main where
 import Control.Applicative ((<|>))
 import Data.Attoparsec.ByteString (
     Parser,
-    endOfInput,
     sepBy,
  )
 import Data.Attoparsec.ByteString.Char8 (
     char8,
     decimal,
-    skipSpace,
     space,
  )
 import Data.Functor (($>))
@@ -22,7 +20,7 @@ main = run 2025 1 parser parser part1 part2
 type Input = [Int]
 
 parser :: Parser Input
-parser = (line `sepBy` space) <* skipSpace <* endOfInput
+parser = line `sepBy` space
   where
     line :: Parser Int
     line = (*) <$> (left <|> right) <*> decimal
