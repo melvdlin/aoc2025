@@ -111,6 +111,16 @@ executable d03
     base ^>=4.18.3.0,
     bytestring ^>=0.12.2.0,
 
+executable d04
+  import: warnings
+  main-is: D04.hs
+  build-depends:
+    aoc2025,
+    attoparsec ^>=0.14.4,
+    base ^>=4.18.3.0,
+    bytestring ^>=0.12.2.0,
+    containers ^>=0.7,
+
   hs-source-dirs: app
   default-language: Haskell2010
 
