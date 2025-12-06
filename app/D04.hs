@@ -6,6 +6,7 @@ import Data.Attoparsec.ByteString (Parser, endOfInput, sepBy)
 import Data.Attoparsec.ByteString.Char8 (char8, skipSpace, space)
 
 import Control.Applicative (many, (<|>))
+import Data.Functor (($>))
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Util (run)
@@ -21,8 +22,8 @@ parser = toSet <$> parseRow `sepBy` space <* skipSpace <* endOfInput
     parseRow :: Parser [Bool]
     parseRow = many (empty <|> occupied)
       where
-        empty = char8 '.' *> return False
-        occupied = char8 '@' *> return True
+        empty = char8 '.' $> False
+        occupied = char8 '@' $> True
 
     toSet :: (Integral a) => [[Bool]] -> Input a
     occupiedCells :: (Integral a) => [[Bool]] -> [(a, a)]

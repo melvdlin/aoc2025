@@ -12,6 +12,7 @@ import Data.Attoparsec.ByteString.Char8 (
     skipSpace,
     space,
  )
+import Data.Functor (($>))
 import Util (run)
 import Prelude hiding (takeWhile)
 
@@ -26,9 +27,9 @@ parser = (line `sepBy` space) <* skipSpace <* endOfInput
     line :: Parser Int
     line = (*) <$> (left <|> right) <*> decimal
     left :: Parser Int
-    left = char8 'L' *> return (-1)
+    left = char8 'L' $> -1
     right :: Parser Int
-    right = char8 'R' *> return 1
+    right = char8 'R' $> 1
 
 part1 :: Input -> Int
 part1 = fst . foldl part1' (0, 50)
