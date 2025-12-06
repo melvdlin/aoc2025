@@ -10,14 +10,24 @@ import System.Exit (die)
 import Prelude hiding (takeWhile)
 
 run ::
-    (Show b, Show c) => Natural -> Natural -> Parser a -> (a -> b) -> (a -> c) -> IO ()
-run year day parser part1 part2 = do
+    (Show c, Show d) =>
+    Natural ->
+    Natural ->
+    Parser a ->
+    Parser b ->
+    (a -> c) ->
+    (b -> d) ->
+    IO ()
+run year day parser1 parser2 part1 part2 = do
     raw <- Input.getInput year day
-    input <- case (parseOnly parser raw) of
+    input1 <- case (parseOnly parser1 raw) of
         Left e -> die e
         Right i -> return i
-    let solution1 = part1 input
-    let solution2 = part2 input
+    input2 <- case (parseOnly parser2 raw) of
+        Left e -> die e
+        Right i -> return i
+    let solution1 = part1 input1
+    let solution2 = part2 input2
     putStrLn $ "part 1:"
     putStrLn $ show solution1
     putStrLn $ "part 2:"

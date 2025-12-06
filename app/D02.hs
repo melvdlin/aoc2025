@@ -11,7 +11,7 @@ import qualified Data.Set as Set
 import Util (run)
 
 main :: IO ()
-main = run 2025 2 (parser @Int64) part1 part2
+main = run 2025 2 (parser @Int64) (parser @Int64) part1 part2
 
 type Input a = [(a, a)]
 

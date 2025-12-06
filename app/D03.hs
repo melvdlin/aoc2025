@@ -10,7 +10,7 @@ import Data.Char (digitToInt)
 import Util (run)
 
 main :: IO ()
-main = run 2025 3 (parser @Int) part1 part2
+main = run 2025 3 (parser @Int) (parser @Int) part1 part2
 
 type Input a = [[a]]
 

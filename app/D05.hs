@@ -8,7 +8,7 @@ import Data.Attoparsec.ByteString.Char8 (char8, decimal, skipSpace, space)
 import Util (run)
 
 main :: IO ()
-main = run 2025 5 (parser @Int) part1 part2
+main = run 2025 5 (parser @Int) (parser @Int) part1 part2
 
 data Input a = Input [(a, a)] [a]
 

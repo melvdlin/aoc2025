@@ -17,7 +17,7 @@ import Util (run)
 import Prelude hiding (takeWhile)
 
 main :: IO ()
-main = run 2025 1 parser part1 part2
+main = run 2025 1 parser parser part1 part2
 
 type Input = [Int]
 
