@@ -29,8 +29,43 @@ part1 :: (Integral a, Show a) => Input a -> a
 part1 (Input fresh available) =
     (fromIntegral . length . filter ((`any` fresh) . inRange)) available
 
-part2 :: (Integral a) => Input a -> a
-part2 = const 0
-
 inRange :: (Ord a) => a -> (a, a) -> Bool
 inRange e (lo, hi) = lo <= e && e <= hi
+
+part2 :: (Integral a, Show a) => Input a -> a
+part2 (Input fresh _) = (sum . (map rangeLen) . (foldr insert [])) fresh
+
+rangeLen :: (Integral a) => (a, a) -> a
+rangeLen (lo, hi) = 1 + hi - lo
+
+type RangeSet a = [(a, a)]
+
+insert :: (Ord a) => (a, a) -> RangeSet a -> RangeSet a
+insert x@(lo, hi) []
+    | hi < lo = []
+    | otherwise = [x]
+insert x@(loX, hiX) (y@(loY, hiY) : ys)
+    -- ()  [] -> ():[]
+    | lt = x : y : ys
+    -- []  () -> []:()
+    | gt = y : (insert x ys)
+    -- ([)]   -> (]
+    | lOverlap = insert (loX, hiY) ys
+    -- [(])   -> [)
+    | rOverlap = insert (loY, hiX) ys
+    -- [()]   -> []
+    | subsumed = y : ys
+    -- ([])   -> ()
+    | subsumes = x : ys
+    -- () empty
+    | otherwise = y : ys
+  where
+    lt = hiX < loY
+    gt = hiY < loX
+    lOverlap = sorted [loX, loY, hiX, hiY]
+    rOverlap = sorted [loY, loX, hiY, hiX]
+    subsumed = sorted [loY, loX, hiX, hiY]
+    subsumes = sorted [loX, loY, hiY, hiX]
+    sorted [] = True
+    sorted [_] = True
+    sorted (x' : y' : zs') = (x' <= y') && sorted (y' : zs')
