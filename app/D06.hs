@@ -27,7 +27,7 @@ parser1 = do
 
 parser2 :: (Integral a) => Parser (Input a)
 parser2 = do
-    widths <- lookAhead (((numbers @Int) `sepBy` space) *> width)
+    widths <- lookAhead ((numbers @Int) `sepBy` space *> width)
     rows <- (many (weirdNumbers widths))
     let cols = List.transpose rows
     let operands = map columnOperands cols
