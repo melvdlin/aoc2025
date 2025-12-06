@@ -20,10 +20,10 @@ type Op a = (a, a -> a -> a)
 type Input a = [([a], Op a)]
 
 parser1 :: (Integral a) => Parser (Input a)
-parser1 =
-    zip . List.transpose
-        <$> numbers `sepBy` space
-        <*> ops
+parser1 = do
+    numbers' <- numbers `sepBy` space
+    ops' <- ops
+    return ((zip . List.transpose) numbers' ops')
 
 parser2 :: (Integral a) => Parser (Input a)
 parser2 = do
