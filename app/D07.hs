@@ -46,12 +46,12 @@ runBeam (start', splitters') = foldl line (IntMap.singleton start' 1, []) splitt
 line :: (IntMap Int, [IntMap Int]) -> IntSet -> (IntMap Int, [IntMap Int])
 line (beams', splits') splitters' = (beams splitters' beams', splits splitters' beams' : splits')
 beams :: IntSet -> IntMap Int -> IntMap Int
-beams splitters'' = foldl coalesce IntMap.empty . map (beam splitters'') . IntMap.toList
+beams splitters' = foldl coalesce IntMap.empty . map (beam splitters') . IntMap.toList
 splits :: IntSet -> IntMap Int -> IntMap Int
-splits splitters'' = IntMap.map (+ 1) . filterKeys (`IntSet.member` splitters'')
+splits splitters' = IntMap.map (+ 1) . filterKeys (`IntSet.member` splitters')
 beam :: IntSet -> (Int, Int) -> IntMap Int
-beam splitters'' (b, n)
-    | b `IntSet.member` splitters'' = IntMap.fromList [(b - 1, n), (b + 1, n)]
+beam splitters' (b, n)
+    | b `IntSet.member` splitters' = IntMap.fromList [(b - 1, n), (b + 1, n)]
     | otherwise = IntMap.singleton b n
 
 coalesce :: IntMap Int -> IntMap Int -> IntMap Int
