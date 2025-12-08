@@ -7,8 +7,6 @@ import Data.Attoparsec.ByteString.Char8 (char8, decimal, space)
 
 import Data.List (sortBy, sortOn)
 import qualified Data.List as List
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.Set (Set)
 import qualified Data.Set as Set
@@ -38,9 +36,8 @@ part1 =
         . take 3
         . sortBy (flip compare)
         . map Set.size
-        . subGraphs
-        . edgesFromList
-        . concatMap bidirectionalise
+        . fst
+        . connectInOrder 2000
         . take 1000
         . map discardThird
         . sortOn third
@@ -50,7 +47,9 @@ part2 :: Input -> Int
 part2 points = x * x'
   where
     (Point x _ _, Point x' _ _) =
-        ( connectInOrder (length points)
+        ( fromMaybe (error "subgraphs are disjoint")
+            . snd
+            . connectInOrder (length points)
             . map discardThird
             . sortOn third
             . connect
@@ -75,52 +74,19 @@ mapWithTail :: (Show a) => (a -> [a] -> b) -> [a] -> [b]
 mapWithTail _ [] = []
 mapWithTail f (x : xs) = f x xs : (mapWithTail f xs)
 
-bidirectionalise :: (a, a) -> [(a, a)]
-bidirectionalise (x, y) = [(x, y), (y, x)]
-
 third :: (a, b, c) -> c
 third (_, _, z) = z
 
 discardThird :: (a, b, c) -> (a, b)
 discardThird (x, y, _) = (x, y)
 
-data Edges v = Edges (Map v (Set v))
-instance (Show v) => Show (Edges v) where
-    show (Edges e) = "Edges " <> (show e)
-
-edgesFromList :: (Ord v) => [(v, v)] -> Edges v
-edgesFromList = Edges . foldr insert Map.empty
-  where
-    insert (p, q) = Map.insertWith (<>) p (Set.singleton q)
-
-takeEdges :: (Ord v) => v -> Edges v -> (Set v, Edges v)
-takeEdges from (Edges edges) = (vertices, Edges edges')
-  where
-    vertices = fromMaybe Set.empty (edges Map.!? from)
-    edges' = Map.delete from edges
-
-subGraphs :: (Ord v, Show v) => Edges v -> [Set v]
-subGraphs edges@(Edges es) = case (Map.keys es) of
-    (start : _) -> let (g, edges') = subGraph start edges in g : subGraphs edges'
-    _ -> []
-
-subGraph :: (Ord v, Show v) => v -> Edges v -> (Set v, Edges v)
-subGraph start = let start' = Set.singleton start in expand start' start'
-  where
-    expand :: (Ord v, Show v) => Set v -> Set v -> Edges v -> (Set v, Edges v)
-    expand collected active edges = case Set.minView (active) of
-        Just (next, active') ->
-            let (vertices, edges') = takeEdges next edges
-             in expand (vertices <> collected) (vertices <> active') edges'
-        Nothing -> (collected, edges)
-
-connectInOrder :: (Ord v, Show v) => Int -> [(v, v)] -> (v, v)
+connectInOrder :: (Ord v, Show v) => Int -> [(v, v)] -> ([Set v], Maybe (v, v))
 connectInOrder = go []
   where
-    go :: (Ord v, Show v) => [Set v] -> Int -> [(v, v)] -> (v, v)
-    go _ _ [] = error "subgraphs are disjoint"
+    go :: (Ord v, Show v) => [Set v] -> Int -> [(v, v)] -> ([Set v], Maybe (v, v))
+    go gs _ [] = (gs, Nothing)
     go gs n (e : es) = case addEdgeBidi e gs of
-        [g] | n == (Set.size g) -> e
+        [g] | n == (Set.size g) -> ([g], Just e)
         gs' -> go gs' n es
     addEdgeBidi :: (Ord v) => (v, v) -> [Set v] -> [Set v]
     addEdgeBidi (x, y) = addEdge (y, x) . addEdge (x, y)
