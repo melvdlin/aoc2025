@@ -12,7 +12,6 @@ import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.Set (Set)
 import qualified Data.Set as Set
-import qualified Debug.Trace as Debug
 import Util (run)
 
 main :: IO ()
@@ -119,9 +118,9 @@ connectInOrder :: (Ord v, Show v) => Int -> [(v, v)] -> (v, v)
 connectInOrder = go []
   where
     go :: (Ord v, Show v) => [Set v] -> Int -> [(v, v)] -> (v, v)
-    go gs _ [] = Debug.trace (show gs) $ error "subgraphs are disjoint"
+    go _ _ [] = error "subgraphs are disjoint"
     go gs n (e : es) = case addEdgeBidi e gs of
-        [g] | n == (Set.size g) -> Debug.trace (show g) e
+        [g] | n == (Set.size g) -> e
         gs' -> go gs' n es
     addEdgeBidi :: (Ord v) => (v, v) -> [Set v] -> [Set v]
     addEdgeBidi (x, y) = addEdge (y, x) . addEdge (x, y)
