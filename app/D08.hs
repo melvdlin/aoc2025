@@ -6,11 +6,13 @@ import Data.Attoparsec.ByteString (Parser, sepBy)
 import Data.Attoparsec.ByteString.Char8 (char8, decimal, space)
 
 import Data.List (sortBy, sortOn)
+import qualified Data.List as List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Data.Set (Set)
 import qualified Data.Set as Set
+import qualified Debug.Trace as Debug
 import Util (run)
 
 main :: IO ()
@@ -46,7 +48,15 @@ part1 =
         . connect
 
 part2 :: Input -> Int
-part2 = const 0
+part2 points = x * x'
+  where
+    (Point x _ _, Point x' _ _) =
+        ( connectInOrder (length points)
+            . map discardThird
+            . sortOn third
+            . connect
+        )
+            points
 
 distance :: Point -> Point -> Int
 distance p q = (sum . map sq) (zipWith (-) (coords p) (coords q))
@@ -104,3 +114,19 @@ subGraph start = let start' = Set.singleton start in expand start' start'
             let (vertices, edges') = takeEdges next edges
              in expand (vertices <> collected) (vertices <> active') edges'
         Nothing -> (collected, edges)
+
+connectInOrder :: (Ord v, Show v) => Int -> [(v, v)] -> (v, v)
+connectInOrder = go []
+  where
+    go :: (Ord v, Show v) => [Set v] -> Int -> [(v, v)] -> (v, v)
+    go gs _ [] = Debug.trace (show gs) $ error "subgraphs are disjoint"
+    go gs n (e : es) = case addEdgeBidi e gs of
+        [g] | n == (Set.size g) -> Debug.trace (show g) e
+        gs' -> go gs' n es
+    addEdgeBidi :: (Ord v) => (v, v) -> [Set v] -> [Set v]
+    addEdgeBidi (x, y) = addEdge (y, x) . addEdge (x, y)
+    addEdge :: (Ord v) => (v, v) -> [Set v] -> [Set v]
+    addEdge (from, to) gs = merged : notFound
+      where
+        merged = foldr (<>) (Set.singleton to) found
+        (found, notFound) = List.partition (from `Set.member`) gs
