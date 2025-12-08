@@ -1,4 +1,4 @@
-module Util (run) where
+module Util (run, trace, traceLabelled) where
 
 import Data.Attoparsec.ByteString (
     Parser,
@@ -6,6 +6,7 @@ import Data.Attoparsec.ByteString (
     parseOnly,
  )
 import Data.Attoparsec.ByteString.Char8 (skipSpace)
+import qualified Debug.Trace as Debug
 import GHC.Natural (Natural)
 import qualified Input (getInput)
 import System.Exit (die)
@@ -35,3 +36,9 @@ run year day parser1 parser2 part1 part2 = do
     putStrLn $ "part 2:"
     putStrLn $ show solution2
     return ()
+
+trace :: (Show a) => a -> a
+trace = traceLabelled ""
+
+traceLabelled :: (Show a) => String -> a -> a
+traceLabelled label x = Debug.trace (label <> show x) x
